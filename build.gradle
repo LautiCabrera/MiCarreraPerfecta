@@ -3,7 +3,3 @@ plugins {
     id 'com.android.application' version '8.0.1' apply false
     id 'com.android.library' version '8.0.1' apply false
 }
-
-dependencies {
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.5'
-}
