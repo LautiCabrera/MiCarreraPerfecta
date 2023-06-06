@@ -10,17 +10,18 @@ public class DBConection {
     private static final String DATABASE_USERNAME = "ies9021_userdb";
     private static final String DATABASE_PASSWORD = "Xsw23edc.127";
 
-    public static Conection getConnection() throws SQLException{
-        try{
-            class.forName("com.mysql.cj.jdbc.Driver");
-            return DriverManager.getConnection(DATABASE_URL, DATABASE_USERNAME, DATABASE_PASSWORD)
-        }catch( ClassNotFoundException e){
-            e.printStackTrace();
+    public static Connection getConnection() throws SQLException {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connection = DriverManager.getConnection(DATABASE_URL, DATABASE_USERNAME, DATABASE_PASSWORD);
+            System.out.println("Connection successful!");
+            return connection;
+        } catch (ClassNotFoundException e) {
+            throw new SQLException("Failed to load database driver", e);
         }
-        return null;
     }
 
-    public static ResultSet executeQuery(String query){
+    public static ResultSet executeQuery(String query) {
         Connection connection = null;
         PreparedStatement statement = null;
         ResultSet result = null;
@@ -28,31 +29,30 @@ public class DBConection {
         try {
             connection = getConnection();
             statement = connection.prepareStatement(query);
-            resultSet = statement.executeQuery();
+            result = statement.executeQuery();
 
-            // Procesar los resultados
-            while (resultSet.next()) {
-                int id = result.getInt("id_branch");
-                String nombre = result.getString("name");
-
-                System.out.println("Branch: " + id + " " + nombre);
-            }
-        }catch (SQLException e){
+            return result;
+        } catch (SQLException e) {
             e.printStackTrace();
-        }finally{
-            try{
-                if(result != null){
-                    result.close();
-                }
-                if(statement != null){
-                    statement.close();
-                }
-                if(connection != null){
-                    connection.close();
-                }
-            }catch (SQLException e){
-                e.printStackTrace();
+            closeResources(connection, statement, result);
+        }
+    
+        return null;
+    }
+
+    public static void closeResources(Connection connection, PreparedStatement statement, ResultSet result) {
+        try {
+            if (result != null) {
+                result.close();
             }
+            if (statement != null) {
+                statement.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 }
